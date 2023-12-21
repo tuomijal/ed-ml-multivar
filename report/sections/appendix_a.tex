@@ -1,0 +1,92 @@
+\section{Appendix: Hyperparameter optimisation}\label{appendix_a}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+Hyperparameter optimisation search spaces are provided below. Early Stopping Callback (ESC) patience, number of HPO trials and maximum number of epochs were determined based on experimentation and computational requirements of the model.
+
+\begin{table}[H]
+\centering
+\caption{LightGBM}
+\begin{tabular}{|r|c|c|c|}
+    \hline
+    Hyperparameter & Search space & Selected value (U) & Selected value (A)\\
+    \hline
+    Number of leaves & $[15..62]$ & 47 & 54 \\
+    Number of estimators & $[50..100]$ & 100 & 59 \\
+    Minimum child samples & $[10..40]$ & 18 & 21 \\
+    Subsample & $[0.1,1.00]$ & 0.33 & 0.71 \\
+    Lags & $[24..336]$ & 72 & 288 \\
+    Learning rate & $10^{[-5..-1]}$ & $10^{-1}$ & $10^{-1}$ \\
+    ESC patience & - & 10 & 10 \\
+    Number of trials & - & 10 & 10 \\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{DeepAR}
+\begin{tabular}{|r|c|c|c|}
+    \hline
+    Hyperparameter & Search space & Selected value (U) & Selected value (A)\\
+    \hline
+    Hidden dimensions & $[12..50]$ & 42 & 40 \\
+    Batch size & $[16, 32]$ & 32 & 32\\
+    Number of RNN layers & $[1..4]$ & 1 & 4\\
+    Dropout & $[0.0,1.0]$ & 0.2 & 0.3\\
+    Learning rate & $10^{[-5..-1]}$ & $10^{-3}$ & $10^{-5}$\\
+    Input chunk length & $[24..336]$ & 288 & 48\\
+    Training lentgh & $[124..336]$ & 48 & 216\\
+    ESC patience & - & 10 & 10 \\
+    Number of trials & - & 60 & 60 \\
+    Max epochs & - & 100 & 100 \\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{TFT}
+    \begin{tabular}{|r|c|c|c|}
+        \hline
+        Hyperparameter & Search space & Selected value (U) & Selected value (A)\\
+        \hline
+        Hidden size & $[4..16]$ & 16 & 16\\
+        LSTM layers & $[1..4]$ & 1 & 1 \\
+        Number of attention heads & $[1..4]$ & 4 & 4 \\
+        Dropout & $[0.0,1.0]$ & 0.1 & 0.1 \\
+        Hidden continuous size & $[4..16]$ & 8 & 8 \\
+        Learning rate & $10^{[-5..-1]}$ & $10^{-3}$ & $10^{-3}$\\
+        Input chunk length & $[24..336]$ & 168 & 168\\
+        Batch size & $\{16,32\}$ & 32 & 32\\
+        ESC patience & - & 3 & 3 \\
+        Number of trials & - & 10 & 10 \\
+        Max epochs & - & 100 & 100 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{N-BEATS}
+    \begin{tabular}{|r|c|c|}
+        \hline
+        Hyperparameter & Search space & Selected value (U) \\
+        \hline
+        Number of stacks & $[15..60]$ & 33 \\
+        Number of blocks & $[1..2]$ & 1 \\
+        Number of layers & $[2..8]$ & 7 \\
+        Layer widths & $\{128,256,512\}$ & 128 \\
+        Batch size & $\{16,32\}$ & 16 \\
+        Learning rate & $10^{[-5..-1]}$ & $10^{-4}$ \\
+        Input chunk length & $[24..336]$ & 240 \\
+        ESC patience & - & 10  \\
+        Number of trials & - & 20 \\
+        Max epochs & - & 100 \\
+        \hline
+    \end{tabular}
+\end{table}
+\pagebreak

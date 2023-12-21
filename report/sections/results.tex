@@ -1,0 +1,58 @@
+\paragraph{Descriptive statistics}\label{descriptive_statistics} The inclusion criteria resulted in a sample of 210,019 individual visits that occured during the 21,600 hour sample window. The hourly seasonality of the absolute occupancy demonstrated a sinusoidal shape (see Table \ref{tab:seasonality}) with lowest median occupancy of 16 between 4-7 a.m. and highest median occupancy of 62 at 4-7 p.m. Minimum, median and maximum occupancies were 2, 38 and 124 respectively.
+
+\input{../output/tables/seasonality.tex}
+
+\paragraph{Missing data} There was a significant amount of missing data in the case of available hospital beds, as can be seen in Figure \ref{fig:beds}. In total, data was missing on 77,636 (11\%) hours out of the total 518,400 hours for all facilities combined. The amount varied significantly between facilities from 0-7,486 hours (0-35\%) which is due to the gradual introduction of the Uoma\textsuperscript{\textregistered} software to each facility. All missing data were imputed with mean of the other hospitals at a given time.
+
+\subsection{Model performance}
+\paragraph{Aggregated performance} Continuous performance results are provided in Table \ref{tab:performance}. Kruskall-Wallis showed statistically significant differences between the models with p=0.0.  $\text{LightGBM}_A$ was the best-performing model with MAE and RMSE with values of 6.63 and 8.77 respectively, yielding a 15\% improvement over ARIMA (p<.001). $\text{LightGBM}_U$ was the second best model with MAE of 6.66 and proportional improvement of 14\% over ARIMA (p<.001). $\text{TFT}_A$ outperformed ARIMA with MAE of 6.86 (p<.001) yielding 12\% proportional improvement. $\text{N-BEATS}$ was the fourth best model with MAE of 6.98 (p<.001) and 10\% proportional improvement, followed by $\text{DeepAR}_A$ with 9\% (p<.001) and finally $\text{TFT}_U$ with 8\% (p<.001). $\text{DeepAR}_U$ was 10\% worse than ARIMA (p<.001). $\text{TFT}_U$, $\text{N-BEATS}$ and $\text{TFT}_U$ had the lowest MSIS of 43, 45 and 48 respectively compared to ARIMA's 65.
+
+\input{../output/tables/performance.tex}
+
+\paragraph{Horizontal performance} The hourly accuracy of each model stratified by the forecasting horizon is provided in Figure \ref{fig:horizon_mae}. The figure shows that both the absolute errors and the differences between the errors are greatest in the afternoon which follows the sinusoidal shape of the variance of the target variable (See Table \ref{tab:seasonality}). $\text{LightGBM}_U$ was consistently the best univariable model regardless of the forecast horizon. Multivariable models performed in a very similiar manner orangecompared to one another except for the very short forecast horizons during of which $\text{LightGBM}_A$ outperformed the others.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{plots/horizon_mae-u-1}
+        \caption{Univariable models}
+        \label{fig:horizon_mae-u-1}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\textwidth]{plots/horizon_mae-a-1}
+        \caption{Multivariable models}
+        \label{fig:horizon_mae-a-1}
+    \end{subfigure}
+    \caption{Horizontal error as measured by mean absolute error (MAE). The errors follow the sinusoidal shape of the standard deviation of the target variable (See Table \ref{tab:seasonality}) which peaks at 4-7 p.m. and then decreases towards the end of the day.}
+    \label{fig:horizon_mae}
+\end{figure}
+
+
+\paragraph{Monthly performance} Performance of the univariable models over different months of the test set is provided in Figure \ref{fig:performance_monthly-u}. TFT, LightGBM and N-BEATS outperformed benchmarks consistently whereas DeepAR was several times bested by statistical models. Overall, the errors were higher during December and October compared e.g. to April or January.
+
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=\textwidth]{plots/performance_monthly-u-1}
+        \caption{Performance of the univariable models over different months of the test set.}
+        \label{fig:performance_monthly-u}
+\end{figure}
+
+\subsection{Feature importance analysis}
+Proportional absolute mean SHAP values for the 20 most important features for $\text{LightGBM}_A$ model are visualised in Figure \ref{fig:importance} separately for horizons $t+1$ and $t+24$. For $t+1$, the target variable itself at lag $t-1$ was the most important variable followed by CMO and RSI indicators and 16 traffic variables. For $t+24$ predictions, 18 traffic variables were included in top 20, along with website visit statistics to domain 1, and AO indicator.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{plots/importance-1.jpg}
+        \caption{$t+1$ importance}
+        \label{fig:importance-1}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{plots/importance-24.jpg}
+        \caption{$t+24$ importance}
+        \label{fig:importance-24}
+    \end{subfigure}
+    \caption{Feature importance SHAP statistics for 20 most important features used with $\text{LightGBM}_A$ model.}
+    \label{fig:importance}
+\end{figure}

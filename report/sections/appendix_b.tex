@@ -1,0 +1,99 @@
+\section{Appendix: Technical analysis indicators}\label{appendix_b}
+\setcounter{table}{0}
+\renewcommand{\thetable}{B\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{B\arabic{figure}}
+
+All the technical analysis indicator values were generated using software by \citet{Benediktsson}. They are briefly described below.
+
+% MOMENTUM INDICATORS
+\subsection{Momentum Indicators}
+\subsubsection{Absolute oscillator}
+Absolute oscillator (AO) (known as absolute price oscillator in econometric context) is a simple comparison between fast and slow moving averages. It is calculated as follows:
+    \[ \text{AO} = \text{SMA}_{12}-\text{SMA}_{16} \]
+here with arbitrary window sizes.
+
+\subsubsection{Chande momentum oscillator}
+Chance momentum oscillator (CMO) aims to capture the momentum of the series $\{y_0, y_1, \dots\}$ by comparing the relative difference between preceding "up values" ($S_u$) and "down values" ($S_d$). It is calculated as follows (in our case with $n = 168$):
+    \begin{align*}
+        S_u &= \sum_{i=1}^{n} y_{t-i}\mathbb{1}\{y_{t-i} < y_t\} \\
+        S_d &= \sum_{i=1}^{n} y_{t-i}\mathbb{1}\{y_{t-i} > y_t\} \\
+        \text{CMO} &= 100 \times \frac{S_u-S_d}{S_u+S_d}
+    \end{align*}
+\subsubsection{Momentum indicator}
+Momentum indicator (MOM) is a "naive" momentum indicator: a simple difference between observed value and lagged value:
+    \[ \text{MOM} = y_t - y_{t-n} \]
+\subsubsection{Percentage oscillator}
+Percentage oscillator is a momentum indicator showing the difference between fast and slow exponential moving averages in proportion of the slower one:
+    \[ \text{PO} = \frac{\text{SMA}_{12} - \text{SMA}_{26}}{\text{SMA}_{26}} \times 100\]
+\subsubsection{Rate of change indicator}
+Rate of change indicator (ROC) is MOM proportional to the lagged value:
+    \[ \text{ROC} = (y_t-y_{t-n}) / y_{t-n} \]
+\subsubsection{Relative Strength Index}
+Relative strength index (RSI) is a momentum indicator similiar to CMO:
+    \begin{align*}
+        \text{UD}_{n} &= \sum_{i=0}^{n} y_i - y_{i-1}\mathbb{1}\{y_i > y_{i-1}\} \\
+        \text{DD}_{n} &= \sum_{i=0}^{n} y_{i-1} - y_{i}\mathbb{1}\{y_i < y_{i-1}\} \\
+        \text{RSI} &= 100 - 100/\left(1+\frac{\text{UD}_{n}}{\text{DD}_{n}}\right)
+    \end{align*}
+where $\text{UD}_{n}$ is sum of positive differences and $\text{DD}_{n}$ is sum of negative differences withing the rolling window.
+\hspace{1cm}
+% MATH TRANSFORM
+\subsection{Math Transform}
+Math transform class consists of simple mathematical operations performed on each member of the set. For brevity we will define $S = \{ y_{t-i} \}_{i=0}^{n}$.
+\subsubsection{Vector Trigonometric Atan $\{\text{ATAN}=\arctan(x) \,:\, x \in S \}$} 
+\subsubsection{Vector Trigonometric Cos $\{\text{COS}=\cos(x) \,:\, x \in S \}$}
+\subsubsection{Vector Hyperbolic Cos $\{\text{COSH}=\cosh(x) \,:\, x \in S \}$}
+\subsubsection{Vector Arithmetic Exp $\{\text{EXP}=\exp(x) \,:\, x \in S \}$}
+\subsubsection{Vector Trigonometric Sin $\{\text{SIN}=\sin(x) \,:\, x \in S \}$}
+\subsubsection{Vector Hyperbolic Sin $\{\text{SINH}=\sinh(x) \,:\, x \in S \}$}
+\subsubsection{Vector Square Root $\{\text{SQRT}=\sqrt{(x)} \,:\, x \in S \}$}
+\subsubsection{Vector Trigonometric Tan $\{\text{TAN}=\tan(x) \,:\, x \in S \}$}
+\subsubsection{Vector Hyperbolic Tan $\{\text{TANH}=\tanh(x) \,:\, x \in S \}$}
+\hspace{1cm}
+% OVERLAP STUDIES
+\subsection{Overlap Studies}
+\subsubsection{MidPoint over period}
+    \[\text{MIDPOINT} = \frac{\max(S)-\min{S}}{2}\]
+\subsubsection{Simple Moving Average}
+    \[\text{SMA}= \frac{1}{n} \sum_{i=0}^{n} y_{t-i} \]
+\subsubsection{Weighted Moving Average}
+    \[ \text{WMA} = \sum_{i=0}^{n}\frac{y_{t-i}n-i}{n-i} \]
+\hspace{1cm}
+% CYCLE INDICATORS
+\subsection{Cycle Indicators}
+\subsubsection{Kaufman Adaptive Moving Average}
+Kaufman adaptive moving average (KAMA) is a filter that aims to reduce signal noice by accounting for volatility. It is calculated as follows:
+    \begin{align*}
+        C &= | y - y_{t-n} | \\
+        V &= \sum_{i=0}^{n}|y_{t-i}-y_{t-i-1}| \\
+        \text{ER} &= C / V \\
+        \text{SC} &= (\text{ER}\times(\text{SMA}_{2}-\text{SMA}_{30}) + \text{SMA}_{30})^2 \\
+        \text{KAMA}_{t} &= \text{KAMA}_{t-1} + \text{SC} (y_t - \text{KAMA}_{t-1})
+    \end{align*}
+
+where C=change, V=volatility, ER=efficiency ratio and SC=smoothing constant.
+\subsubsection{Triangular Moving Average}
+Triangular moving average (TRIMA) is an average of $n$ SMA functions:
+    \[\text{TRIMA}= \sum_{i=0}^{n} \text{SMA}_{i} / 168 \]
+% STATISTICS FUNCTIONS
+\subsection{Statistics Functions}
+Given the overal form of linear regression:
+    \[ y_t = X\beta + \epsilon\]
+then by definition:
+\subsubsection{Linear Regression Angle $\text{LINEARREGANGLE}=\arctan({\beta})$}
+\subsubsection{Linear Regression Intercept $\text{LINEARREGINTERCEPT}=\epsilon$}
+\subsubsection{Linear Regression Slope $\text{LINEARREGSLOPE}=\beta$}
+\subsubsection{Standard Deviation $\text{STDDEV}=\sigma$}
+\subsubsection{Variance $\text{VAR}=V(S)$}
+\hspace{1cm}
+% MATH OPERATORS
+\subsection{Math Operators}
+\subsubsection{Highest value over in window $\text{MAX}=\max(S)$} 
+\subsubsection{Index of highest value in window}
+    MAXINDEX is the index of the highest observed value of $S$
+\subsubsection{Lowest value over a specified period $\text{MIN}=\min(S)$}
+\subsubsection{Index of lowest value over a specified period}
+    MININDEX is the index of the highest observed value of $S$ 
+\subsubsection{Summation $\text{SUM}=\Sigma S$}
+\pagebreak

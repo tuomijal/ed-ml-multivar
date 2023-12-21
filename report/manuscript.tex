@@ -1,0 +1,121 @@
+\documentclass{article}
+
+%\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}			% Can be removed after putting your text content
+\usepackage{graphicx}
+\graphicspath{ {../output/} }
+\usepackage[numbers]{natbib}
+\usepackage{doi}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{authblk}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[nobottomtitles*]{titlesec}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{bbold}
+\usepackage{amsmath}
+\setlist{noitemsep}
+
+% Keywords command
+\providecommand{\keywords}[1]
+{
+  \small
+  \emph{\textit{Keywords---}} #1
+}
+
+\def\correspondingauthor{\footnote{
+	Corrersponding author.
+	\emph{Email address:} jalmari.tuominen@tuni.fi
+}}
+
+
+\title{Forecasting emergency department occupancy with advanced machine learning models and multivariable input}
+
+%\date{September 9, 1985}	% Here you can change the date presented in the paper title
+%\date{} 					% Or removing it
+
+\author[1]{Jalmari Tuominen\correspondingauthor{}}
+\author[1]{Eetu Pulkkinen}
+\author[2]{Jaakko Peltonen}
+\author[2]{Juho Kanniainen}
+\author[1,3]{Niku Oksala}
+\author[1,4]{Ari Palomäki}
+\author[1]{Antti Roine}
+
+\affil[1]{\footnotesize Faculty of Medicine and Health Technology, Tampere University}
+\affil[2]{\footnotesize Faculty of Information Technology and Communication Sciences, Tampere University}
+\affil[3]{\footnotesize Centre for Vascular Surgery and Interventional Radiology, Tampere University Hospital}
+\affil[4]{\footnotesize Kanta-Häme Central Hospital, Hämeenlinna, Finland}
+
+% Uncomment to remove the date
+%\date{}
+
+% Uncomment to override  the `A preprint' in the header
+%\renewcommand{\headeright}{Technical Report}
+%\renewcommand{\undertitle}{Technical Report}
+%\renewcommand{\shorttitle}{\textit{arXiv} Template}
+
+%%% Add PDF metadata to help others organize their library
+%%% Once the PDF is generated, you can check the metadata with
+%%% $ pdfinfo template.pdf
+\hypersetup{
+pdftitle={A template for the arxiv style},
+pdfsubject={q-bio.NC, q-bio.QM},
+pdfauthor={David S.~Hippocampus, Elias D.~Striatum},
+pdfkeywords={First keyword, Second keyword, More},
+}
+
+\begin{document}
+\maketitle
+
+% change fontsize
+\AtBeginEnvironment{tabular}{\small}
+\AtBeginEnvironment{caption}{\normal}
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+% keywords can be removed
+% \keywords{First keyword \and Second keyword \and More}
+
+\section{Introduction}\label{introduction}
+\input{sections/introduction}
+
+\section{Materials and Methods}\label{materials_and_methods}
+\input{sections/materials_and_methods}
+
+\section{Results}\label{results}
+\input{sections/results}
+
+\section{Discussion}\label{discussion}
+\input{sections/discussion}
+
+\section{Conclusions}\label{conclusions}
+\input{sections/conclusions}
+
+%\bibliographystyle{unsrt}
+\bibliographystyle{plainnat}
+\bibliography{references}  %%% Uncomment this line and comment out the ``thebibliography'' section below to use the external .bib file (using bibtex) .
+
+\input{sections/declarations}
+
+\clearpage
+\appendix
+\input{sections/appendix_a}
+\input{sections/appendix_b}
+\input{sections/appendix_c}
+\input{sections/appendix_d}
+
+\end{document}

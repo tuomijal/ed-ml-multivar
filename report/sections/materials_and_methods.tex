@@ -1,0 +1,141 @@
+\subsection{Data sets and data splitting}\label{subsec:data}
+
+Tampere University Hospital is an academic hospital located in Tampere, Finland. It serves a population of 535,000 in the Pirkanmaa Hospital District and, as a tertiary hospital, an additional population of 365,700, providing level 1 trauma centre capabilities. The hospital ED, \emph{Acuta}, is a combined ED with a total capacity of 111–118 patients, with 70 beds (with an additional 7 beds as a reserve) and 41 seats for walk-in patients. Approximately 100,000 patients are treated annually. For this study, all registered ED visits were obtained from a hospital database created during the sample period from January 1, 2017 to June 19, 2019. All remote consultations and certifications of death without prior medical interventions, as well as hourly duplicates, were excluded.
+
+
+\paragraph{Data splitting for hyperparameter optimization.} 
+To optimize hyperparameters, we divided the dataset into training and validation sets. To account for yearly seasonal patterns, we ensured that the training set covered a 12-month period, capturing the complete spectrum of seasonal variations. The training set spanned January 1, 2017, to December 31, 2017, comprising 8,760 data points, while the validation set extended from January 1, 2018, to June 19, 2018, containing 4,080 data points. During hyperparameter optimization, the models were trained on the training set, and their performance was assessed using the validation set. The optimal hyperparameters were determined based on the validation set's performance. All models underwent hyperparameter optimization via the Tree-structured Parzen Estimator (TPE) method \cite{Bergstra2011}, using the optimization framework by \citet{Akiba2019}. Details on the number of tested hyperparameter combinations and search spaces can be found in Appendix \ref{appendix_a}.
+
+
+\paragraph{Re-training protocol and testing.} 
+Due to the temporal nature of data, it is important to train the final models on the recent data available. For that reason, after optimizing the model's hyperparameters, we adopted the data-splitting principle for subsequent re-training. 
+
+We evaluated the models using data from June 20, 2018, to June 19, 2019, a span of 365 days. To facilitate periodic re-training, this data was divided into 13 folds. For the first 12 folds, each fold consisted of 720 data points, equivalent to 24 hours multiplied by 30 days, roughly approximating a month. The final fold consisted of a residual of 120 hours. The models were re-trained at the start of each month using the preceding 12,840 data points. For instance, the training duration for the initial fold ranged from January 1, 2017, to June 19, 2018. This period, which totals 12,840 data points (8,760 + 4,080), matched the dataset used for hyperparameter optimization. The re-training window was then rolled forward for evaluations on the subsequent folds.
+
+Each prediction spanned a horizon of 24 hours. Every day, a 24-hour forecast was generated at 00:00, based on the models re-trained at the start of the respective month (fold). Given that the testing phase encompasses 365 days across all folds, this produces matrices of dimensions $365 \times 24$ for each model. For DL models the data was normalized to fit within the range $[0,1]$ before analysis.
+
+\subsubsection{Explanatory variables}
+
+For the purposes of this study, we collected 167 explanatory variables from multiple data sources with the goal of covering as much of the three components of Asplin’s model as possible. These variables as summarized in Table \ref{tab:explanatory_variables} and briefly introduced below. All covariates are divided into two categories: 1) past covariates ($P$) and 2) future covariates ($F$). $P$ features refer to variables that are not known in the future (e.g. hospital bed capacity) in contrast to $F$ features which are always known both in the future and in the past (e.g. hour of day).
+
+\paragraph{Hospital beds} The temporal availability of hospital beds in 24 individual hospitals or health care centres in the catchment area was included as provided by the patient logistics system Uoma\textsuperscript{\textregistered} by Unitary Healthcare Ltd. in hourly resolution. The impact of the availability of beds on ED service demand is two-fold. First, a low availability of beds leads to a prolonged length of stay, since patients remain in the ED after initial treatment while they wait for an available follow-up care bed. This kind of access block leads to the cumulation of patients in the ED, and both clinical and experience empirical evidence has shown that this effect is a significant contributor to overcrowding \cite{Morley2018}. Second, a low availability of beds sometimes forces primary health care physicians to refer patients to an ED merely to organise the bed that the patient requires, which again contributes to occupancy. Bed capacity statistics are visualised in Figure \ref{fig:beds} and locations of the facilities along with their distance from the study hospital are provided in Appendix \ref{appendix_c}.
+
+\paragraph{Traffic} Hourly traffic data were obtained from an open database maintained by Fintraffic Ltd, which is a company operating under the ownership and steering of the Finnish Ministry of Transport and Communications \cite{Digitraffic}. Data from all 33 bidirectional observation stations in the Pirkanmaa Region were included, resulting in 66 traffic feature vectors, each containing the number of cars that passed the observation station each hour. The acquisition of traffic variables was motivated by the work by \citet{Rauch2019}, which suggested that traffic variables might increase predictive accuracy when used as an input in an ARIMAX model. Locations of the observation stations along with their distance from study hospital are provided in Appendix \ref{appendix_c}.
+
+\paragraph{Weather} Ten historical weather variables were collected from the nearest observation station located in Härmälä, Tampere, 600 meters from the city centre, using open data provided by the Finnish Meteorological Institute \cite{FMI}. The inclusion of weather variables was inspired by the work by \citet{Whitt2019}. We assumed that weather can be forecasted with satisfying accuracy one day in advance and, for this reason, used next-day weather variables as future covariates. 
+
+\paragraph{Public events} City of Tampere officials provided us with an exhaustive historical event calendar, containing all public events ranging from small to large gatherings that were organized during the sample period in the Tampere area. Using these data we created a time series containing the number of public events organised each day in the sample period. Hypothetically, an increased number of citizens engaging in festivities – which often comes with increased substance consumption – might be associated with ED service demand.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\textwidth]{plots/beds.jpg}
+	\caption{Hospital bed capacity statistics. HC = Health center, RH = Regional hospital, UH = University hospital. Red color indicates that no beds are available and number of available beds is shown with hues of green.}
+	\label{fig:beds}
+\end{figure}
+
+\paragraph{Website visits} Data on website visits to two hospital domains were provided by the hospital IT department. Data were available on two domains: tays.fi (Domain 1, D1) and tays.fi/acuta (Domain 2, D2), the former of which being the hospital home page and the latter the home page of the hospital ED. D1 visit data were available in hourly resolution, whereas D2 data were only available in daily resolution. Using D1 visits, we also summed up visits between 6 p.m. and midnight in an identical manner to the one proposed by \citet{Ekstrom2015} ($\text{Domain 1}_{EV}$). In addition, we included a stationary version of this variable by dividing evening visits by earlier visits during the day ($\text{Domain 1}_{ER}$). The numbers of Google searches for the search term \emph{Acuta} were also extracted from Google Trends \cite{GoogleTrends}.
+
+\paragraph{Calendar variables} Weekdays and months were included as categorical variables. Timestamps of national holidays were provided by the University Almanac Office \cite{AlmanacOffice}, and each of them was included as a binary vector. Inspired \citet{Whitt2019}, we included “holiday lags”, which encode whether the three previous or three following days were holidays. We also included the numbers of previous consecutive holidays, encoding how many consecutive holidays preceded the day of interest. A binary encoding of a day’s status as a working or non-working day was also included.
+
+\paragraph{Technical analysis} In addition to the exogenous explanatory features described above, we engineered 30 features using the endogenous signal of the target variables. These variables range from a set of moving averages and mathematical moments to econometric indicators and they are introduced in detail in Appendix \ref{appendix_b}.
+
+\begin{table}[p]
+\centering
+	\caption{Explanatory variable list. $P$ = past covariate i.e. a value that is not known into the future at prediction time, $F$ = future covariate i.e. a value that is known both in the past and in the future. Some variables are provided in the appendices for brevity.}
+	\label{tab:explanatory_variables}
+	\begin{tabular}[t]{ llll }
+	\hline
+	Feature group & Name & Number \\
+	\hline
+	% BEDS
+	Hospital beds & See Appendix \ref{appendix_c} & $P_{1-33}$ \\
+	% CALENDAR VARIABLES
+	Calendar variables & Holiday name & $F_{34}$ \\
+	& Holiday lags & $F_{35-41}$ \\
+	& Hour & $F_{42}$ \\
+	& Working day & $F_{43}$ \\
+	& Month & $F_{44}$ \\
+	& Preceeding holidays & $F_{45}$ \\
+	& Weekday & $F_{46}$ \\
+	% PUBLIC EVENTS
+	Public events & All events & $F_{47}$ \\
+	% TA INDICATORS
+	TA indicators & See Appendix \ref{appendix_b} & $P_{48-85}$ \\
+	% TRAFFIC
+	Traffic & See Appendix \ref{appendix_c} & $P_{86-151}$ \\
+	% GOOGLE TRENDS
+	& Google Trends & $P_{152}$ \\
+	% WEATHER
+	Weather & Air pressure & $F_{153}$ \\
+	& Air temperatue & $F_{154}$ \\
+	& Cloud count & $F_{155}$ \\
+	& Day air temperature max & $F_{156}$ \\
+	& Day air temperature min & $F_{159}$ \\
+	& Dew point temperature & $F_{158}$ \\
+	& Rain intensity & $F_{159}$ \\
+	& Relative humidity & $F_{160}$ \\
+	& Slipperiness & $F_{161}$ \\
+	& Snow depth & $F_{162}$ \\
+	& Visibility & $F_{163}$ \\
+	% WEBSITE VISITS
+	Website visits & Domain 1 & $P_{164}$ \\
+	& $\text{Domain 1}_{EV}$ & $P_{165}$ \\
+	& $\text{Domain 1}_{ER}$ & $P_{166}$ \\
+	& Domain 2 & $P_{167}$ \\
+	\hline
+	& Total & $A_{167}$ \\
+	\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{Feature sets}
+
+Using a high number of input features from multiple data sources poses a significant challenge if the predictive model is to be implemented in a real-life clinical setting, which increases both the cost of building and maintaining the system as well as its fragility. For this reason, we tested the models with two sets of inputs, one containing all variables listed above (feature set $A, n = 167$) and one containing  nothing but the target variable history (feature set $U$) as an input. Each multivariable model is tested with both $A$ and $U$ inputs, and they are distinguished from one another with naming convention of {$M_F$}, in which $M$ stands for model name and $F$ for feature set. For example, $\text{LGBM}_A$ refers to a LightGBM model trained and tested with all available data.
+
+\subsubsection{Target variable}\label{sec:dependent_variables}
+In this study we focus on predicting absolute nonstratified hourly occupancy of the ED. This includes both bed-occupying and walk-in patients in all treatment spaces of the ED. Occupancy was selected as the target variable because it is affected by all three components of the Asplin's model, since input, throughput and output all contribute to total occupancy contrary to arrivals, which is by definition affected primarily by input.
+
+
+\subsubsection{Performance metrics}
+\paragraph{Continuous metrics } We provide three continuous error metrics: Mean absolute error (MAE) and Root mean squared error (RMSE) for point forecasts (PF) and Mean scaled interval score (MSIS) for prediction intervals. MAE is calculated as follows:
+
+\begin{equation}
+	\mathrm{MAE} = \frac{1}{n} \sum_{t=1}^{n} |y_t - \hat{y}_t|,
+\end{equation}
+where $y_t$ is the ground truth and $\hat{y}$ is the predicion. MAE was used to calculate the proportional difference between the models and relevant benchmark and for statistical tests.
+
+Point forecasts were also evaluated using root mean square error (RMSE):
+
+\begin{equation}
+\mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{t=1}^{n}(y_t-\hat{y}_t)^2}
+\end{equation}
+
+All the models investigated in this study are probabilistic in nature and were configured to produce 95 \% prediction intervals (PI) in addition to PFs. We thus also quantify the performance of these PIs using MSIS as proposed by Gneiting and Raftery \cite{Gneiting2007}:
+
+\begin{equation}
+\mathrm{MSIS} = \frac{\Sigma_{t=n+1}^{n+h}(u_{t}-l_{t})+\frac{2}{\alpha}\mathbb{1}\{y_{t}<l_{t}\}+\frac{2}{\alpha}(y_{t}-l_{t})\mathbb{1}\{y_{t}>u_{t}\}}{h \times \frac{1}{n-m}\Sigma_{t=m+1}^{n}|y_{t}-y_{t-m}|}
+\end{equation}
+where $u_t$ and $l_t$ are the upper and lower bounds, $x_t$ is the ground truth and $\alpha$ is the significance level which was set to 0.05 based on the levels of the generated PIs.
+
+
+
+\paragraph{Statistical significance} Statistical significance testing of hourly absolute error rates between ARIMA and other models was performed using Kruskal-Wallis one-way analysis for variance with Dunn's post hoc test and Holm's correction for multiple pairwise comparisons. This aims to provide a similar approach as in M3 competition \cite{Koning2005}. The significance level was specified as p < 0.05. Statistical tests were performed using software by \citet{Scipy} and \citet{Terpilowski2019}.
+
+
+\subsubsection{Feature importance analysis}
+
+Studying how the model selects and weights features the predictions are based upon can provide insight into both factors affecting occupancy and reasons underlying good or bad forecasting performance. In this study, this was performed using SHapley Additive exPlanations (SHAP) method as proposed by \citet{Lundberg2017}. SHAP assigns a unique importance value to each feature in a prediction by quantifying its contribution to the prediction outcome. SHAP values are based on cooperative game theory principles, calculating the average marginal contribution of each feature across different coalitions of features, providing a unified and interpretable explanation for individual predictions. For brevity, we limit our attention to importance statistics of the best-performing model.
+
+\subsection{Models}
+Model definition, training and backtesting was handled using software by \citet{Herzen2022} which provided both a unified interface to underlying models and also their implementation unless otherwise stated. We document the performance of four forecasting models:
+
+
+\begin{itemize}
+	\item \textbf{Temporal fusion transformer} (TFT) is a deep learning model designed for interpretable time series forecasting, combining recurrent layers, multi-variable attention mechanisms, and static covariate encoders to capture complex temporal patterns and interdependencies \cite{Lim2021}.
+	\item \textbf{N-BEATS} (Neural Basis Expansion Analysis) is a deep learning architecture that decomposes the past values of a time series using a set of basis expansion blocks, eliminating the need for prior knowledge of underlying temporal patterns \cite{Oreshkin2019}.
+	\item \textbf{DeepAR} is a probabilistic forecasting model utilizing an autoregressive recurrent network structure, typically trained on large collections of related time series, to produce point and probabilistic forecasts \cite{Salinas2020}.
+	\item \textbf{LightGBM} is a gradient boosting framework that employs a histogram-based algorithm, optimized for speed and efficiency, while handling large datasets and supporting both classification and regression tasks \cite{Ke2017}.
+\end{itemize}
+
+
+\paragraph{Benchmark models} Four models were used for benchmarking purposes: Seasonal naïve (SN), Autoregressive Integrated Moving Average (ARIMA), and two ETS models: Holt-Winter's Seasonal Damped method (HWDM) and Holt-Winter's we Additive Method (HWAM). 168-hour sliding window was utilized for all models. ARIMA parameters were defined with AutoARIMA as initially described by \citet{Hyndman2008} using the stepwise approach and Python implementation by \citet{garza2022statsforecast}. \textit{A priori} known hourly seasonality 24 was provided to AutoARIMA model as a parameter.
