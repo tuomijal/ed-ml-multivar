@@ -1,6 +1,8 @@
 # Forecasting emergency department occupancy with advanced machine learning models and multivariable input
 
-This folder contains code, data and complete draft for manuscript *Forecasting emergency department occupancy with advanced machine learning models and multivariable input*.
+This repository contains code, data and complete draft for manuscript *[Forecasting emergency department occupancy with advanced machine learning models and multivariable input](https://www.sciencedirect.com/science/article/pii/S0169207023001346?utm_campaign=STMJ_219742_AUTH_SERV_PA&utm_medium=email&utm_acid=134065231&SIS_ID=&dgcid=STMJ_219742_AUTH_SERV_PA&CMX_ID=&utm_in=DM438879&utm_source=AC_)* published in [International Journal of Forecasting](https://www.sciencedirect.com/journal/international-journal-of-forecasting) on 27th of December 2023.
+
+https://doi.org/10.1016/j.ijforecast.2023.12.002
 
 Authors:
 
