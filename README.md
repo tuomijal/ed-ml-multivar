@@ -1,5 +1,7 @@
 # Forecasting emergency department occupancy with advanced machine learning models and multivariable input
 
+This repository contains code, data and raw text for the following article:
+
 https://doi.org/10.1016/j.ijforecast.2023.12.002
 
 Authors:
@@ -17,7 +19,7 @@ Emergency department (ED) crowding is a significant threat to patient safety and
 
 ## Usage
 
-This repository contains code, data and raw text of the [article](https://doi.org/10.1016/j.ijforecast.2023.12.002). The repository uses GNU Make to manage the complete pipeline from raw data to manuscript PDF. The code works both locally and in a SLURM cluster. Configuration details and caveats of these two options are provided below.
+This repository uses GNU Make to manage the complete pipeline from raw data to manuscript PDF. The code works both locally and in a SLURM cluster. Configuration details and caveats of these two options are provided below.
 
 
 ### Local
